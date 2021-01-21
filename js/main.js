@@ -24,6 +24,9 @@ app.controller("myCtrl",["$scope",function($scope){
     $scope.changeDate=function(){
         var flight = $scope.flightPlan.first.split('\n')
         $scope.apts=[];
+        $scope.nodes=[];
+        $scope.flightList.head=null;
+        $scope.flightList.length=0;
         var dates=[]
         for (let i = 0; i < flight.length; i++) {
             //获取起飞机场/目的机场的名称和时间
