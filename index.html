@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"  href="css/bootstrap.min.css">
+    <script   src="js/angular.min.js"></script>
+    <script src="js/jquery.min.js" ></script>
+    <script   src="js/main.js"></script>
+    
+    <title>Document</title>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+    <div class="container" >
+        <div class="row">
+            <div class="flightPlan col-md-8">
+            <textarea cols="30" rows="10" ng-model="flightPlan.first" class="form-control"></textarea>
+            <button type="button" ng-click="changeDate()"  class="btn btn-primary">提交</button>
+            <button type="button" ng-click="clean()" class="btn btn-danger">重置</button>
+            </div> 
+        </div>
+        <div class="aptinfo">
+            <ul class="viewinfo list-unstyled">
+                <li class="info" ng-repeat="apt in apts">
+                    <span>{{apt.name}} </span>
+                    <input type="number" ng-model="apt.timezone" placeholder="时区" ng-change="changeZone()">
+                    <!-- 尝试变更时间格式 -->
+                    <input type="number" ng-model="apt.trans" placeholder="过站时间" ng-change="aptTrans($index)">
+                   
+                </li>
+            </ul>
+        </div>
+        <div class="links">
+            <ul class="result list-inline" ng-init="initList()">
+
+                <li class="part thumbnail" ng-repeat="node in nodes">
+                    <div >
+                        <div class="row">
+                            <div class="apt col-md-6">
+                                <span class="col-md-5 text-center">机场 </span>
+                                <input class="col-md-4" type="text" ng-model="node.name" ng-blur="changeapt($index)">
+                            </div>
+                            <div class="pek col-md-6"><div><span class="col-md-5 text-center ">北京时 </span><input type="text" ng-model="node.pek" ng-blur="checkedchange()" class="col-md-4 ">  </div> </div>
+                        </div>   
+                        <div class="row">
+                            <div class="utc text-center col-md-4"><span>世界时 {{node.utc}} </span></div>
+                            <div class="loc text-center col-md-4"><span>当地时 {{node.loc}} </span></div>
+                            <div class="timezone text-center col-md-4"><span>时区 {{node.timezone}} </span></div>
+                        </div>
+                        <div class="trans "><div><span class="col-md-5">航段/过站时长</span><input class="col-md-4 " type="text" ng-model="node.trans" ng-blur="checkedchange()"></div>
+                        </div>
+                    </div>
+                   <span class="btn btn-danger"  ng-click="deleteNode($index)" ng-show="triggerShow[$index]">删除</span>
+                   <span class="btn btn-primary" ng-click="insertNode($index)" ng-show="triggerShow[$index]">插入</span>
+                   <span class="btn btn-primary" ng-hide="triggerShow[$index]" ng-click="certainInsert($index)">确认</span> 
+                   <span class="btn btn-danger" ng-hide="triggerShow[$index]" ng-click="cancel($index)">取消</span>
+
+                </li>
+                <hr>
+                <li class="part thumbnail" >
+                    <div >
+                        <div class="row">
+                            <div class="apt col-md-6">
+                                <span class="col-md-5 text-center">机场 </span>
+                                <input class="col-md-4" type="text" ng-model="addNode.name">
+                            </div>
+                            <div class="pek col-md-6"><div><span class="col-md-5 text-center ">北京时 </span><input type="text" ng-model="addNode.pek" ng-blur="" class="col-md-4 ">  </div> </div>
+                        </div>   
+                        
+                        <div class="trans "><div><span class="col-md-5">航段/过站时长</span><input class="col-md-4 " type="text" ng-model="addNode.trans" ng-blur=""></div>
+                        </div>
+                        <span class="btn btn-primary" style="color: rgb(30, 255, 169);" ng-click="newNode()">新增</span>
+                    </div>
+                   
+
+                </li>
+            
+
+            </ul>
+            <div class="createTabel" >
+                <table class="statistic table table-striped table-bordered table-hover text-center table-condensed">
+                    <tr>
+                        <th class="text-center" ng-repeat="node in nodes">
+                            {{node.name}}
+                        </th>
+                    </tr>
+                    <tr ng-repeat="tb in tables">
+                        <td ng-repeat="t in tb">
+                            {{t}}
+                        </td>
+                    </tr>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
