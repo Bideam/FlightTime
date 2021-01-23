@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"  href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script   src="js/angular.min.js"></script>
     <script src="js/jquery.min.js" ></script>
     <script   src="js/main.js"></script>
@@ -12,14 +13,86 @@
 </head>
 <body ng-app="myApp" ng-controller="myCtrl">
     <div class="container" >
-        <div class="row">
+        <div class="primarytable">
+            <table class="table table-condensed text-center cont">
+                <tr >
+                    <th class="text-center">机场</th>
+                    <th class="text-center">航班时刻</th>
+                    <th class="text-center">航段时间</th>
+                    <th class="text-center">过站时间</th>
+                    <th class="text-center">时区</th>
+                </tr>
+                <tr ng-repeat="td in plans">
+                    <td >
+                        <input class="form-control text-center" type="text" ng-model="td.name">
+                    </td>
+                    <td>
+                        <div ng-if="$index==0"> 
+                           <input type="text" ng-model="td.pek" class="form-control text-center"> 
+                        </div>
+                        <div ng-if="$index!=0">
+                            <input type="text" ng-model="td.pek" ng-disabled="true" class="form-control text-center"> 
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" ng-model="td.route" class="form-control text-center">
+                    </td>
+                    <td>
+                        <input type="number" ng-model="td.trans" class="form-control text-center">
+                    </td>
+                    <td>
+                        <input class="form-control text-center" type="number" ng-model="td.timezone" ng-blur="td.timezone=limitZone(td.timezone)">
+                    </td>
+                </tr>
+               
+                <tr style="border-top:2px firebrick solid;">
+                    <td >
+                        <div class="">
+                        <input class="form-control text-center" type="text" ng-model="addapt.name">
+                        </div>
+                    </td>
+                    <td>
+                        <div ng-if="plans.length>0" class=""> 
+                           <input type="text" ng-model="addapt.pek" ng-disabled="true" class="form-control text-center"> 
+                        </div>
+                        <div ng-if="plans.length==0" class=""> 
+                            <input type="text" ng-model="addapt.pek" ng-disabled="false" class="form-control text-center"> 
+                         </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" ng-model="addapt.route" class="form-control text-center">
+                        </div>
+                    </td>
+                    <td>
+                        <div >
+                            <input type="number" ng-model="addapt.trans" class="form-control text-center">
+                        </div>
+                        
+                    </td>
+                    <td>
+                        <div >
+                            <input class="form-control text-center" type="number" ng-model="addapt.timezone" ng-blur="addapt.timezone=limitZone(addapt.timezone)">
+                        </div>
+                        
+                    </td>
+                </tr>
+            </table>
+            <div class="row sm-pad">
+                <button class="btn btn-primary" ng-click="augment()">添加</button>
+                <button class="btn btn-danger" ng-click="clear()">重置</button>
+                <button class="btn btn-info" ng-click="subsim()">单程</button>
+                <button class="btn btn-success" ng-click="subdou()">双程</button>
+            </div>
+        </div>
+        <div class="row" ng-hide="true">
             <div class="flightPlan col-md-8">
             <textarea cols="30" rows="10" ng-model="flightPlan.first" class="form-control"></textarea>
             <button type="button" ng-click="changeDate()"  class="btn btn-primary">提交</button>
             <button type="button" ng-click="clean()" class="btn btn-danger">重置</button>
             </div> 
         </div>
-        <div class="aptinfo">
+        <div class="aptinfo" ng-hide="true">
             <ul class="viewinfo list-unstyled">
                 <li class="info" ng-repeat="apt in apts">
                     <span>{{apt.name}} </span>
@@ -30,8 +103,8 @@
                 </li>
             </ul>
         </div>
-        <div class="links">
-            <ul class="result list-inline" ng-init="initList()">
+        <div class="links" >
+            <ul class="result list-inline" ng-init="initList()" ng-hide="true">
 
                 <li class="part thumbnail" ng-repeat="node in nodes">
                     <div >
@@ -57,7 +130,7 @@
 
                 </li>
                 <hr>
-                <li class="part thumbnail" >
+                <li class="part thumbnail" ng-hide="true">
                     <div >
                         <div class="row">
                             <div class="apt col-md-6">
@@ -77,6 +150,47 @@
             
 
             </ul>
+            <hr>
+            <div>
+                <table class="table">
+                    <tr ng-repeat="it in rownodes" class="row">
+                        <td>
+                            <div class="row">
+                                <div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[0].name" ng-blur="changeapt($index,0)"></div>
+                                <div class="col-xs-6 text-center xs-pad">时区 {{it[0].timezone}}</div>
+                            
+                            </div> 
+                           
+                            <div class="row">
+                                <div><div class="col-xs-6 text-center xs-pad">PEK </div><div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[0].pek" ng-blur="checkedchange()"></div> </div>
+                                <div><span>UTC {{it[0].utc}}</span></div>
+                                <div><span>LOC {{it[0].loc}}</span></div>
+                                <div><span class="text-center xs-pad">过站 {{it[0].trans}}</span></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <div class="col-xs-6 col-xs-offset-3 col-md-2 col-md-offset-5"><input class="form-control text-center" type="text" ng-model="it[0].route"></div>
+                                <span class="col-md-8 col-md-offset-2">→→→→→→→→→</span>
+                                <div class="col-xs-6 col-xs-offset-3 col-md-2 col-md-offset-5"><input class="form-control text-center" type="text" ng-model="it[0].flightNum" ng-blur="changeFlight($index,0)" placeholder="输入航班号"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[1].name" ng-blur="changeapt($index,1)"></div>
+                                <div class="col-xs-6 text-center xs-pad">时区 {{it[1].timezone}} </div>
+                            </div> 
+                            
+                            <div class="row">
+                                <div><div class="col-xs-6 text-center xs-pad">PEK </div><div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[1].pek" ng-blur="checkedchange()"></div> </div>
+                                <div><span>UTC {{it[1].utc}}</span></div>
+                                <div><span>LOC {{it[1].loc}}</span></div>
+                                <div><div class="col-xs-6 text-center xs-pad">过站</div> <div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[1].trans" ng-blur="checkedchange()"></div></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="createTabel" >
                 <table class="statistic table table-striped table-bordered table-hover text-center table-condensed">
                     <tr>
@@ -90,7 +204,6 @@
                         </td>
                     </tr>
                 </table>
-                
             </div>
         </div>
     </div>

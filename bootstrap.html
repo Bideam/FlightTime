@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="css/style.css">
     <title>Document</title>
 </head>
-<body>
-    <div class="container">
+<body ng-app="my">
+    <div class="container" ng-controller="ctrl">
         <div class="row">
             <div class="col-md-4 col-lg-4" style="background-color: aquamarine;">4</div>
             <div class="col-md-8" style="background-color: beige;">8</div>
@@ -33,6 +33,36 @@
             <li>2</li>
             <li>3</li>
         </ul>
+
+        <div>
+            <table class="table">
+                <tr ng-repeat="it in its">
+                    <div ng-if="$index ==0 ">
+                       <td>{{it[0]}} ,ng-if index= {{$index}}</td> 
+                    </div>
+                    <div ng-if="$index!==0">
+                       <td>{{it[0]}} ,ng-if index= {{$index}}</td> 
+                       <td>{{it[1]}}</td> 
+                    </div>
+                    
+                </tr>
+            </table>
+        </div>
+        <div ng-if="true">
+            <div>this true</div> 
+        </div>
+        <div ng-if="false">
+            this false
+        </div>
     </div>
+    
+    <script src="js/angular.min.js"></script>
+    <script>
+        var app=angular.module("my",[]);
+        app.controller("ctrl",["$scope",function($scope){
+            $scope.its=[[1,2],[3,4]]
+        }])
+    </script>
 </body>
+
 </html>

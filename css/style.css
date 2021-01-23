@@ -1,0 +1,18 @@
+
+input[type=text]{
+   padding: 0px 0px;
+   
+}
+.sm-pad{
+    padding-left: 15px;
+}
+.col-xs-6{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.xs-pad{
+    padding: 0px 0px;
+}
+.form-control{
+    height: 24px;
+}
