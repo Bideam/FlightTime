@@ -54,6 +54,12 @@
         <div ng-if="false">
             this false
         </div>
+        <input type="date" ng-model="date" ng-change="update()" style="border: none;">
+        <input type="date" ng-model="date1" ng-disabled="true">
+        <button ng-click="any()">anlis </button>
+        <div>{{date}} </div>
+        <button ng-click="first()">first</button>
+        <button ng-click="second()">second</button>
     </div>
     
     <script src="js/angular.min.js"></script>
@@ -61,7 +67,74 @@
         var app=angular.module("my",[]);
         app.controller("ctrl",["$scope",function($scope){
             $scope.its=[[1,2],[3,4]]
+            $scope.update=function(){
+                console.log($scope.date.getMonth()+1+"月"+$scope.date.getDate()+"日" );
+                console.log(dateformat($scope.date));
+                var ttt=dateformat($scope.date);
+                console.log(todate(ttt));
+            }
+            $scope.any=function(){
+                $scope.date=new Date();
+                //$scope.date=dateformat($scope.date);
+                console.log($scope.date);
+            }
+            $scope.first=function(){
+                console.log(dateformat($scope.date))
+                $scope.formatdate=dateformat($scope.date);
+            }
+            $scope.second=function(){
+                console.log(todate($scope.formatdate));
+                $scope.date=todate($scope.formatdate);
+                $scope.date1=todate($scope.formatdate)
+            }
         }])
+        function dateformat(date){
+            var y=date.getFullYear();
+            var m=date.getMonth()+1;
+            var d=date.getDate();
+            return y+'/'+m+'/'+d;
+        }
+        function todate(date){
+            var cont=date.split("/");
+            
+            var temp=new Date(cont[0],parseInt(cont[1])-1,cont[2]);
+            return temp;
+        }
+
+        function initTdate(date,pek,trans){
+            trans=parseInt(trans);
+            var time=pek.split(':');
+            time=parseInt(time[0])*60+parseInt(time[1]);
+            time=time+trans;
+            var res=new Date();
+            var ttime=Math.floor(time/60);
+            ttime>=24?res.setDate(date.getDate()+1):res.setDate(date.getDate());
+            ttime<0?res.setDate(date.getDate()-1):res.setDate(date.getDate());
+            return res;
+
+        }
+        function mvarydate(date,pek,route){
+            pek=pek.split(':');
+            pek=parseInt(pek[0])*60+parseInt(pek[1]);
+            route=route.split(":");
+            route=parseInt(route[0])*60+parseInt(route[1]);
+            pek=pek-route;
+            var res=new Date();
+            var ttime=Math.floor(pek/60);
+            ttime<0?res.setDate(date.getDate()+1):res.setDate(date.getDate());
+            return res;
+        }
+        function initRdate(date,pek,route){
+            pek=pek.split(':');
+            pek=parseInt(pek[0])*60+parseInt(pek[1]);
+            route=route.split(":");
+            route=parseInt(route[0])*60+parseInt(route[1]);
+            pek=pek+route;
+            var res=new Date();
+            var ttime=Math.floor(pek/60);
+            ttime>=24?res.setDate(date.getDate()+1):res.setDate(date.getDate());
+            return res;
+        }
     </script>
 </body>
 

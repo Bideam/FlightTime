@@ -24,28 +24,28 @@
                 </tr>
                 <tr ng-repeat="td in plans">
                     <td >
-                        <input class="form-control text-center" type="text" ng-model="td.name">
+                        <input class="form-control text-center" type="text" ng-model="td.name" ng-blur="checkname($index)">
                     </td>
                     <td>
                         <div ng-if="$index==0"> 
-                           <input type="text" ng-model="td.pek" class="form-control text-center"> 
+                           <input type="text" ng-model="td.pek" class="form-control text-center" > 
                         </div>
                         <div ng-if="$index!=0">
                             <input type="text" ng-model="td.pek" ng-disabled="true" class="form-control text-center"> 
                         </div>
                     </td>
                     <td>
-                        <input type="text" ng-model="td.route" class="form-control text-center">
+                        <input type="text" ng-model="td.route" class="form-control text-center" ng-blur="checkroute($index)">
                     </td>
                     <td>
-                        <input type="number" ng-model="td.trans" class="form-control text-center">
+                        <input type="number" ng-model="td.trans" class="form-control text-center" ng-disabled='$index==0' ng-blur="checktrans($index)">
                     </td>
                     <td>
-                        <input class="form-control text-center" type="number" ng-model="td.timezone" ng-blur="td.timezone=limitZone(td.timezone)">
+                        <input class="form-control text-center" type="number" ng-model="td.timezone" ng-blur="td.timezone=limitZone(td.timezone)" >
                     </td>
                 </tr>
                
-                <tr style="border-top:2px firebrick solid;">
+                <tr style="border-top:2px firebrick solid;" ng-hide="plans.length>0">
                     <td >
                         <div class="">
                         <input class="form-control text-center" type="text" ng-model="addapt.name">
@@ -66,7 +66,7 @@
                     </td>
                     <td>
                         <div >
-                            <input type="number" ng-model="addapt.trans" class="form-control text-center">
+                            <input type="number" ng-model="addapt.trans" class="form-control text-center" ng-disabled="true">
                         </div>
                         
                     </td>
@@ -82,7 +82,8 @@
                 <button class="btn btn-primary" ng-click="augment()">添加</button>
                 <button class="btn btn-danger" ng-click="clear()">重置</button>
                 <button class="btn btn-info" ng-click="subsim()">单程</button>
-                <button class="btn btn-success" ng-click="subdou()">双程</button>
+                <button class="btn btn-success" ng-click="subdou()">往返</button>
+                <button class="btn btn-default" ng-click="getdata()" ng-hide="rownodes.length==0">导出</button>
             </div>
         </div>
         <div class="row" ng-hide="true">
@@ -163,16 +164,18 @@
                            
                             <div class="row">
                                 <div><div class="col-xs-6 text-center xs-pad">PEK </div><div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[0].pek" ng-blur="checkedchange()"></div> </div>
+                                <div><div class="col-xs-6 text-center xs-pan">LOC </div><div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[0].loc" ng-blur="locchange()"></div> </div>
                                 <div><span>UTC {{it[0].utc}}</span></div>
-                                <div><span>LOC {{it[0].loc}}</span></div>
                                 <div><span class="text-center xs-pad">过站 {{it[0].trans}}</span></div>
                             </div>
                         </td>
                         <td>
                             <div class="text-center">
-                                <div class="col-xs-6 col-xs-offset-3 col-md-2 col-md-offset-5"><input class="form-control text-center" type="text" ng-model="it[0].route"></div>
+                                <div class="col-xs-6 col-xs-offset-3 col-md-2 col-md-offset-5"><input class="form-control text-center" type="text" ng-model="it[0].route" ng-blur="checkedchange()"></div>
                                 <span class="col-md-8 col-md-offset-2">→→→→→→→→→</span>
                                 <div class="col-xs-6 col-xs-offset-3 col-md-2 col-md-offset-5"><input class="form-control text-center" type="text" ng-model="it[0].flightNum" ng-blur="changeFlight($index,0)" placeholder="输入航班号"></div>
+                                <div ng-if="$index==0" class="row"><div class="col-xs-6 text-right xs-pad col-md-2 col-md-offset-4">始发日期</div><div class="col-xs-10 col-xs-offset-1 col-md-3 col-md-offset-5"><input class="form-control text-left" type="date" ng-model="it[0].date" ng-change="firstdate()"></div></div>
+                                <div ng-if="$index>0" class="row"><div class="col-xs-6 text-right xs-pad col-md-2 col-md-offset-4">起飞日期</div><div class="col-xs-10 col-xs-offset-1 col-md-3 col-md-offset-5"><input class="form-control text-left" type="date" ng-model="it[0].date" ng-disabled="true"></div> </div>
                             </div>
                         </td>
                         <td>
@@ -183,8 +186,8 @@
                             
                             <div class="row">
                                 <div><div class="col-xs-6 text-center xs-pad">PEK </div><div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[1].pek" ng-blur="checkedchange()"></div> </div>
+                                <div><div class="col-xs-6 text-center xs-pan">LOC </div><div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[1].loc" ng-blur="locchange()"></div> </div>
                                 <div><span>UTC {{it[1].utc}}</span></div>
-                                <div><span>LOC {{it[1].loc}}</span></div>
                                 <div><div class="col-xs-6 text-center xs-pad">过站</div> <div class="col-xs-6"><input class="form-control text-center" type="text" ng-model="it[1].trans" ng-blur="checkedchange()"></div></div>
                             </div>
                         </td>
@@ -207,6 +210,8 @@
             </div>
         </div>
     </div>
-
+    <div ng-hide="pad" ng-dblclick="tohide()" id="pad">
+        <div class="neipad"><textarea  cols="35" rows="20" ng-model="outdata"></textarea></div>
+    </div>
 </body>
 </html>
