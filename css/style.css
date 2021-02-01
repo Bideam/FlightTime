@@ -17,20 +17,9 @@ input[type=text]{
     height: 24px;
 }
 #pad{
-    height: 100%;
     width: 100%;
-    position:absolute;
-    left: 0px;
-    top: 0px;
-    float: left;
     background-color:rgba(50, 50, 50, 0.8);
 }
 .neipad{
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -ms-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
+   margin: 20px auto;
 }

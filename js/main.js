@@ -889,8 +889,9 @@ app.controller("myCtrl",["$scope",function($scope){
             var part=[];
             var flights1=[];
             var flights2=[];
+            var part1=[]
             for (let i = 0; i < $scope.rownodes.length; i++) {
-                var strings;
+                var strings,strings1;
                 var flight=$scope.rownodes[i];
                 if (!$scope.rownodes[i][0].flightNum) {
                     alert("请输入所有航段的航班号");
@@ -903,13 +904,24 @@ app.controller("myCtrl",["$scope",function($scope){
                 flights1.push(strings);
                 strings=dealLocFlight(flight);
                 flights2.push(strings);
+                var hm=flight[0].route.split(':');
+                strings1=flight[0].name+"-"+flight[1].name+"航段时间"+hm[0]+"小时"+hm[1]+"分钟";
+                part1.push(strings1);
             }
             var str="【"+part.join("-")+"】\n【北京时间】\n";
             var str1=flights1.join('\n');
             var str2="\n【当地时间】\n";
             var str3=flights2.join('\n');
-            console.log(str+str1+str2+str3);
-            $scope.outdata=str+str1+str2+str3;
+            var str4=part1.join('\n');
+            var count;
+            if ($scope.rownodes.length%2>0) {
+                count=Math.floor($scope.rownodes.length/2);
+            }else{
+                count=Math.floor($scope.rownodes.length/2)-1;
+            }
+            var temp=Math.floor(parseInt($scope.rownodes[count][1].trans)/60)+"小时"+(parseInt($scope.rownodes[count][1].trans)%60)+"分钟编排";
+            var str5="\n"+$scope.rownodes[count][1].name+"过站时间按"+temp;
+            $scope.outdata=str+str1+str2+str3+'\n\n'+str4+str5;
             $scope.pad=false;
         }
         

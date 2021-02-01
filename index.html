@@ -104,6 +104,9 @@
                 </li>
             </ul>
         </div>
+        <div ng-hide="pad" ng-dblclick="tohide()" id="pad">
+            <div class="neipad text-center"><textarea  cols="35" rows="20" ng-model="outdata"></textarea></div>
+        </div>
         <div class="links" >
             <ul class="result list-inline" ng-init="initList()" ng-hide="true">
 
@@ -210,8 +213,6 @@
             </div>
         </div>
     </div>
-    <div ng-hide="pad" ng-dblclick="tohide()" id="pad">
-        <div class="neipad"><textarea  cols="35" rows="20" ng-model="outdata"></textarea></div>
-    </div>
+    
 </body>
 </html>
