@@ -32,22 +32,36 @@ app.controller("myCtrl",["$scope",function($scope){
             
         }
     }
+    $scope.initPlans=function(){
+        $scope.plans=[];
+        var obj={name:null,timezone:null,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+        $scope.plans.push(obj);
+        for (let i = 0; i < 3; i++) {
+            var newO = $scope.plans[$scope.plans.length-1];
+            var obj={name:newO.name1,timezone:newO.timezone1,trans:newO.trans1,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+            $scope.plans.push(obj);
+            /* var obj={name:null,timezone:null,pek:null,route:null,name1:null,timezone1:null,trans:null};
+            $scope.plans.push(obj); */
+        }
+        
+    }
+    $scope.dealPlans=function(){
+        for (let i = 1; i < $scope.plans.length; i++) {
+            $scope.plans[i].name=$scope.plans[i-1].name1;
+            $scope.plans[i].timezone=$scope.plans[i-1].timezone1;
+            $scope.plans[i].trans=$scope.plans[i-1].trans1;
+            
+        }
+    }
     //用于新增航班节点
     $scope.augment=function(){
-        if ($scope.plans.length==0) {
+/*         if ($scope.plans.length==0) {
             var apt=$scope.addapt;
             if (!apt.name) {
                 alert("请输入机场");
                 return;
             }
-/*             if (apt.trans=="" || apt.trans==null) {
-                alert("请输入过站时间");
-                return;
-            }else if (isNaN(parseInt(apt.trans))) {
-                alert("过站时间只能是数字");
-                apt.trans=null;
-                return;
-            } */
+
             if (apt.route=="" || apt.route==null) {
                 alert("请输入航段时间");
                 return;
@@ -100,17 +114,21 @@ app.controller("myCtrl",["$scope",function($scope){
                 $scope.plans.push(tempapt);
             }
             
+        } */
+        $scope.dealPlans();
+        for (let i = 0; i < $scope.plans.length; i++) {
+            var part = $scope.plans[i];
+            if (!part.name || !part.name1) {
+                $scope.plans.splice(i,1);
+            }
         }
-        
+        var newO = $scope.plans[$scope.plans.length-1];
+        var obj={name:newO.name1,timezone:newO.timezone1,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+        $scope.plans.push(obj);
+       
     }   
     //确认输入的机场符合格式
-    $scope.checkapt=function(index){
-        var apt=$scope.plans[index];
-        if (!apt.name) {
-            alert("请输入机场");
-            return true;
-        }
-        
+    $scope.checkapt=function(apt){
         if (apt.route=="" || apt.route==null) {
             alert("请输入航段时间");
             return true;
@@ -128,17 +146,21 @@ app.controller("myCtrl",["$scope",function($scope){
                 return true;
             }
         }
-        if (apt.trans=="" || apt.trans==null) {
+        apt.route=apt.route.indexOf(":")>0?apt.route:apt.route.substr(0,2)+":"+apt.route.substr(2,2); 
+        if (apt.trans1=="" || apt.trans1==null) {
             alert("请输入过站时间");
             return true;
-        }else if (isNaN(parseInt(apt.trans))) {
+        }else if (isNaN(parseInt(apt.trans1))) {
             alert("过站时间只能是数字");
-            apt.trans=null;
+            apt.trans1=null;
             return true;
         }
-        if (apt.timezone=="" || apt.timezone==null) {
+        if (apt.timezone=="" || apt.timezone==null || apt.timezone1=="" || apt.timezone1==null) {
             alert("请输入机场所在时区，正数为东时区，负数为西时区");
             return true;
+        }else{
+            apt.timezone=$scope.limitZone(apt.timezone)
+            apt.timezone1=$scope.limitZone(apt.timezone1);
         }
     }
     $scope.checkname=function(index){
@@ -181,9 +203,36 @@ app.controller("myCtrl",["$scope",function($scope){
             return;
         }
     }
+    $scope.checkpart=function(){
+        if ($scope.plans[0].pek=="" || $scope.plans[0].pek==null) {
+            alert("请录入始发航班时刻");
+            return true;
+        }else{
+            if ($scope.plans[0].pek.indexOf("：")) {
+                $scope.plans[0].pek.replace("：",":");                        
+            }
+            if ( $scope.plans[0].pek.indexOf(":")>0 &&$scope.plans[0].pek.length!=5) {
+                alert("请输入正确时间格式，格式如下: XX:XX or XXXX");
+                $scope.plans[0].pek=null;
+                return true;
+            }else if( $scope.plans[0].pek.indexOf(":")<0 && $scope.plans[0].pek.length!=4){
+                alert("请输入正确时间格式，格式如下: XX:XX or XXXX");
+                $scope.plans[0].pek=null;
+                return true;
+            }
+        }
+        $scope.plans[0].pek=$scope.plans[0].pek.indexOf(':')>0?$scope.plans[0].pek:$scope.plans[0].pek.substr(0,2)+":"+$scope.plans[0].pek.substr(2,2);
+        for (let i = 0; i < $scope.plans.length; i++) {
+            var part = $scope.plans[i];
+            if ($scope.checkapt(part)) {
+                return true;
+            }
+        }
+    }
     //清空已添加的航班节点
     $scope.clear=function(){
-        $scope.plans=[];
+
+        $scope.initPlans();
         $scope.addapt={};
         $scope.flightList.init();
         $scope.nodes=$scope.ListToArray($scope.flightList);
@@ -196,23 +245,49 @@ app.controller("myCtrl",["$scope",function($scope){
         $scope.nodes=$scope.ListToArray($scope.flightList);
         $scope.updateTable();
         $scope.rownodes=[];
-        if ($scope.plans.length<=1) {
+        $scope.dealPlans();
+        var temp=0;
+        while(temp<$scope.plans.length){
+            var part = $scope.plans[temp];
+            if (!part.name || !part.name1) {
+                $scope.plans.splice(temp,1);
+            }else{
+               temp++; 
+            }
+            
+        }
+        
+        if ($scope.plans.length<1) {
             alert("请至少先录入两个机场");
+            $scope.initPlans();
+            return;   
+        }
+        var test=$scope.checkpart();
+        if (test) {
             return;
         }
-        if (!$scope.plans[$scope.plans.length-1].name ) {
-            
-            $scope.plans.pop();
-        }else{
-            
-            if ($scope.checkapt($scope.plans.length-1)) {
-                return;
-            }
-        }
+        
+        
+    
         $scope.apts=[];
         $scope.nodes=[];
         $scope.flightList.init();
-        if ($scope.plans.length==2) {
+        for (let i = 0; i < $scope.plans.length; i++) {
+            var part = $scope.plans[i];
+            var obj={name:part.name,timezone:part.timezone,trans:part.trans1};
+            $scope.apts.push(obj);
+            $scope.flightList.append(plantoNode(part.name,part.pek,part.route,part.trans,part.timezone));
+            obj={name:part.name1,timezone:part.timezone1,trans:part.trans1};
+            $scope.apts.push(obj);
+            $scope.flightList.append(plantoNode(part.name1,null,null,part.trans1,part.timezone1));            
+        }
+        $scope.apts=unique($scope.apts);
+        $scope.PlanInit($scope.flightList);
+        $scope.nodes=$scope.ListToArray($scope.flightList);
+        $scope.updateNodesToNav();
+        $scope.updateTrigger();
+        $scope.updateTable();
+/*          if ($scope.plans.length==2) {
             var aptname1=$scope.plans[0].name;
             var aptpek1=$scope.plans[0].pek;
             var aptroute1=$scope.plans[0].route;
@@ -268,7 +343,7 @@ app.controller("myCtrl",["$scope",function($scope){
             $scope.updateTable();
             
         }
-        
+         */
 
         
     }

@@ -14,17 +14,29 @@
 <body ng-app="myApp" ng-controller="myCtrl">
     <div class="container" >
         <div class="primarytable">
-            <table class="table table-condensed text-center cont">
+            <table class="table table-condensed text-center cont" ng-init="initPlans()">
                 <tr >
                     <th class="text-center">机场</th>
+                    <th class="text-center">时区</th>
                     <th class="text-center">航班时刻</th>
                     <th class="text-center">航段时间</th>
-                    <th class="text-center">过站时间</th>
+                    <th class="text-center">机场</th>
                     <th class="text-center">时区</th>
+                    <th class="text-center">过站时间</th>
+                    
                 </tr>
                 <tr ng-repeat="td in plans">
-                    <td >
-                        <input class="form-control text-center" type="text" ng-model="td.name" ng-blur="checkname($index)">
+                    <td ng-if="$index==0">
+                        <input class="form-control text-center" type="text" ng-model="td.name" >
+                    </td>
+                    <td ng-if="$index!=0">
+                        <input class="form-control text-center" type="text" ng-model="plans[$index-1].name1" >
+                    </td>
+                    <td ng-if="$index==0">
+                        <input class="form-control text-center" type="number" ng-model="td.timezone" >
+                    </td>
+                    <td ng-if="$index!=0">
+                        <input class="form-control text-center" type="number" ng-model="plans[$index-1].timezone1" >
                     </td>
                     <td>
                         <div ng-if="$index==0"> 
@@ -35,14 +47,18 @@
                         </div>
                     </td>
                     <td>
-                        <input type="text" ng-model="td.route" class="form-control text-center" ng-blur="checkroute($index)">
+                        <input type="text" ng-model="td.route" class="form-control text-center" >
+                    </td>
+                    <td >
+                        <input class="form-control text-center" type="text" ng-model="td.name1" >
                     </td>
                     <td>
-                        <input type="number" ng-model="td.trans" class="form-control text-center" ng-disabled='$index==0' ng-blur="checktrans($index)">
+                        <input class="form-control text-center" type="number" ng-model="td.timezone1"  >
                     </td>
                     <td>
-                        <input class="form-control text-center" type="number" ng-model="td.timezone" ng-blur="td.timezone=limitZone(td.timezone)" >
+                        <input type="number" ng-model="td.trans1" class="form-control text-center" >
                     </td>
+                    
                 </tr>
                
                 <tr style="border-top:2px firebrick solid;" ng-hide="plans.length>0">
@@ -81,8 +97,7 @@
             <div class="row sm-pad">
                 <button class="btn btn-primary" ng-click="augment()">添加</button>
                 <button class="btn btn-danger" ng-click="clear()">重置</button>
-                <button class="btn btn-info" ng-click="subsim()">单程</button>
-                <button class="btn btn-success" ng-click="subdou()">往返</button>
+                <button class="btn btn-info" ng-click="subsim()">生成</button>
                 <button class="btn btn-default" ng-click="getdata()" ng-hide="rownodes.length==0">导出</button>
             </div>
         </div>

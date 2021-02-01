@@ -48,6 +48,11 @@
                 </tr>
             </table>
         </div>
+        <ul>
+            <li ng-repeat="node in nodes">
+                <div>cans <div ng-bind="nodes[$index]"></div></div>
+            </li>
+        </ul>
         <div ng-if="true">
             <div>this true</div> 
         </div>
@@ -67,6 +72,7 @@
         var app=angular.module("my",[]);
         app.controller("ctrl",["$scope",function($scope){
             $scope.its=[[1,2],[3,4]]
+            $scope.nodes=[1,2,3];
             $scope.update=function(){
                 console.log($scope.date.getMonth()+1+"月"+$scope.date.getDate()+"日" );
                 console.log(dateformat($scope.date));
