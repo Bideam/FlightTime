@@ -16,16 +16,20 @@
         <div class="primarytable">
             <table class="table table-condensed text-center cont" ng-init="initPlans()">
                 <tr >
+                    <th class="text-center">航班号</th>
                     <th class="text-center">起飞机场</th>
                     <th class="text-center">时区</th>
                     <th class="text-center">航班时刻</th>
                     <th class="text-center">航段时间</th>
                     <th class="text-center">目的机场</th>
                     <th class="text-center">时区</th>
-                    <th class="text-center">过站时间</th>
+                    <th class="text-center">过站时间(分)</th>
                     
                 </tr>
                 <tr ng-repeat="td in plans">
+                    <td>
+                        <input type="text" class="form-control text-center" ng-model="td.flightNum">
+                    </td>
                     <td ng-if="$index==0">
                         <input class="form-control text-center" type="text" ng-model="td.name" >
                     </td>
@@ -94,11 +98,13 @@
                     </td>
                 </tr>
             </table>
+            <div class="row " id="initdate"><div class="col-md-2 col-xs-5">始发日期<input class="form-control text-left" type="date" ng-model="initdate" ></div></div>
             <div class="row sm-pad">
                 <button class="btn btn-primary" ng-click="augment()">添加</button>
                 <button class="btn btn-danger" ng-click="clear()">重置</button>
                 <button class="btn btn-info" ng-click="subsim()">生成</button>
                 <button class="btn btn-default" ng-click="getdata()" ng-hide="rownodes.length==0">导出</button>
+                
             </div>
         </div>
         <div class="row" ng-hide="true">

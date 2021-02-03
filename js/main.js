@@ -34,11 +34,11 @@ app.controller("myCtrl",["$scope",function($scope){
     }
     $scope.initPlans=function(){
         $scope.plans=[];
-        var obj={name:null,timezone:null,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+        var obj={flightNum:null,name:null,timezone:null,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
         $scope.plans.push(obj);
         for (let i = 0; i < 3; i++) {
             var newO = $scope.plans[$scope.plans.length-1];
-            var obj={name:newO.name1,timezone:newO.timezone1,trans:newO.trans1,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+            var obj={flightNum:null,name:newO.name1,timezone:newO.timezone1,trans:newO.trans1,pek:null,route:null,name1:null,timezone1:null,trans1:null};
             $scope.plans.push(obj);
             /* var obj={name:null,timezone:null,pek:null,route:null,name1:null,timezone1:null,trans:null};
             $scope.plans.push(obj); */
@@ -128,7 +128,7 @@ app.controller("myCtrl",["$scope",function($scope){
        
     }   
     //确认输入的机场符合格式
-    $scope.checkapt=function(apt){
+    $scope.checkapt=function(apt,num){
         if (apt.route=="" || apt.route==null) {
             alert("请输入航段时间");
             return true;
@@ -147,14 +147,19 @@ app.controller("myCtrl",["$scope",function($scope){
             }
         }
         apt.route=apt.route.indexOf(":")>0?apt.route:apt.route.substr(0,2)+":"+apt.route.substr(2,2); 
-        if (apt.trans1=="" || apt.trans1==null) {
-            alert("请输入过站时间");
-            return true;
-        }else if (isNaN(parseInt(apt.trans1))) {
-            alert("过站时间只能是数字");
-            apt.trans1=null;
-            return true;
+        if (num==$scope.plans.length-1) {
+            
+        }else{
+             if (apt.trans1=="" || apt.trans1==null) {
+                alert("请输入过站时间");
+                return true;
+            }else if (isNaN(parseInt(apt.trans1))) {
+                alert("过站时间只能是数字");
+                apt.trans1=null;
+                return true;
+            }
         }
+           
         if (apt.timezone=="" || apt.timezone==null || apt.timezone1=="" || apt.timezone1==null) {
             alert("请输入机场所在时区，正数为东时区，负数为西时区");
             return true;
@@ -224,7 +229,7 @@ app.controller("myCtrl",["$scope",function($scope){
         $scope.plans[0].pek=$scope.plans[0].pek.indexOf(':')>0?$scope.plans[0].pek:$scope.plans[0].pek.substr(0,2)+":"+$scope.plans[0].pek.substr(2,2);
         for (let i = 0; i < $scope.plans.length; i++) {
             var part = $scope.plans[i];
-            if ($scope.checkapt(part)) {
+            if ($scope.checkapt(part,i)) {
                 return true;
             }
         }
@@ -276,12 +281,15 @@ app.controller("myCtrl",["$scope",function($scope){
             var part = $scope.plans[i];
             var obj={name:part.name,timezone:part.timezone,trans:part.trans1};
             $scope.apts.push(obj);
-            $scope.flightList.append(plantoNode(part.name,part.pek,part.route,part.trans,part.timezone));
+            $scope.flightList.append(plantoNode(part.name,part.pek,part.route,part.trans,part.timezone,part.flightNum));
             obj={name:part.name1,timezone:part.timezone1,trans:part.trans1};
             $scope.apts.push(obj);
             $scope.flightList.append(plantoNode(part.name1,null,null,part.trans1,part.timezone1));            
         }
         $scope.apts=unique($scope.apts);
+        if ($scope.initdate) {
+            $scope.flightList.head.date=$scope.initdate;
+        }
         $scope.PlanInit($scope.flightList);
         $scope.nodes=$scope.ListToArray($scope.flightList);
         $scope.updateNodesToNav();
@@ -574,8 +582,12 @@ app.controller("myCtrl",["$scope",function($scope){
     }
     //输入航班日期
     $scope.firstdate=function(){
+        
         $scope.rowToNodes();
         $scope.flightList.head.date=$scope.nodes[0].date;
+        
+        
+        
         $scope.PlanInit($scope.flightList);
         
         $scope.nodes=$scope.ListToArray($scope.flightList);
@@ -1054,7 +1066,7 @@ function unique(arr){
         return temp;
 }
 //将航班计划转换为节点
-function plantoNode(name,pek,route,trans,timezone){
+function plantoNode(name,pek,route,trans,timezone,flightNum){
     var name=name;
     var pek=pek || null;
     var route=route || null;
@@ -1062,7 +1074,7 @@ function plantoNode(name,pek,route,trans,timezone){
     var trans=trans || null;
     var timezone=timezone || null;
     var loc=null;
-    var flightNumber=null;
+    var flightNumber=flightNum || null;
     var date=null;
     var res=new Node(name,pek,utc,loc,trans,timezone,flightNumber,route,date);
     return res;
