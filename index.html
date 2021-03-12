@@ -19,7 +19,7 @@
                     <th class="text-center">航班号</th>
                     <th class="text-center">起飞机场</th>
                     <th class="text-center">时区</th>
-                    <th class="text-center">航班时刻</th>
+                    <th class="text-center">航班时刻/th>
                     <th class="text-center">航段时间</th>
                     <th class="text-center">目的机场</th>
                     <th class="text-center">时区</th>
@@ -28,7 +28,7 @@
                 </tr>
                 <tr ng-repeat="td in plans">
                     <td>
-                        <input type="text" class="form-control text-center" ng-model="td.flightNum">
+                        <input type="text" class="form-control text-center" ng-model="td.flightNum" placeholder="MFXXXX">
                     </td>
                     <td ng-if="$index==0">
                         <input class="form-control text-center" type="text" ng-model="td.name" >
@@ -44,14 +44,14 @@
                     </td>
                     <td>
                         <div ng-if="$index==0"> 
-                           <input type="text" ng-model="td.pek" class="form-control text-center" > 
+                           <input type="text" ng-model="td.pek" class="form-control text-center" placeholder="北京时 HH:MM"> 
                         </div>
                         <div ng-if="$index!=0">
                             <input type="text" ng-model="td.pek" ng-disabled="true" class="form-control text-center"> 
                         </div>
                     </td>
                     <td>
-                        <input type="text" ng-model="td.route" class="form-control text-center" >
+                        <input type="text" ng-model="td.route" class="form-control text-center" placeholder="HH:MM">
                     </td>
                     <td >
                         <input class="form-control text-center" type="text" ng-model="td.name1" >
