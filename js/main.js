@@ -922,11 +922,14 @@ app.controller("myCtrl",["$scope",function($scope){
     $scope.updateTable=function(){
         $scope.tables=[];
         var initTd=[];
+        var tem={};
         for (let j = 0; j < 24; j++) {
             initTd=[];
             for (let i = 0; i < $scope.nodes.length; i++) {
-                initTd[i] = varyTime($scope.nodes[i].pek,j);
-               
+                tem={};
+                tem.pek= varyTime($scope.nodes[i].pek,j);
+                tem.loc=varyTime($scope.nodes[i].loc,j);
+               initTd[i]=tem; 
            }
            $scope.tables.push(initTd);
         }
