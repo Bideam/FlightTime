@@ -8,6 +8,7 @@ app.controller("myCtrl",["$scope",function($scope){
     $scope.flightList=new List();
     $scope.plans=[];
     $scope.addapt={};
+    
     //航班时刻表格信息
     $scope.tables=[];
     $scope.rownodes=[[1,2],[3,4]];
@@ -34,14 +35,32 @@ app.controller("myCtrl",["$scope",function($scope){
     }
     $scope.initPlans=function(){
         $scope.plans=[];
-        var obj={flightNum:null,name:null,timezone:null,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+        $scope.chars=["包机","调机","正班"];
+        var obj={flightNum:null,chara:$scope.chars[0],name:null,timezone:8,trans:null,pek:null,route:null,name1:null,timezone1:8,trans1:null};
         $scope.plans.push(obj);
         for (let i = 0; i < 3; i++) {
             var newO = $scope.plans[$scope.plans.length-1];
-            var obj={flightNum:null,name:newO.name1,timezone:newO.timezone1,trans:newO.trans1,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+            var obj={flightNum:null,chara:newO.chara,name:newO.name1,timezone:newO.timezone1,trans:newO.trans1,pek:null,route:null,name1:null,timezone1:null,trans1:null};
             $scope.plans.push(obj);
             /* var obj={name:null,timezone:null,pek:null,route:null,name1:null,timezone1:null,trans:null};
             $scope.plans.push(obj); */
+        }
+        
+    }
+    //初始填充航空公司
+    $scope.isstart=function(n){
+        if (!$scope.plans[n].flightNum) {
+            $scope.plans[n].flightNum="MF";
+        }
+    }
+    //自动复制航班号
+    $scope.updateflightnum=function(n){
+        if ($scope.plans.length<=n) {
+            return;
+        }else{
+            if (!$scope.plans[n+1].flightNum) {
+                $scope.plans[n+1].flightNum=$scope.plans[n].flightNum;
+            }
         }
         
     }
@@ -123,9 +142,9 @@ app.controller("myCtrl",["$scope",function($scope){
             }
         }
         var newO = $scope.plans[$scope.plans.length-1];
-        var obj={name:newO.name1,timezone:newO.timezone1,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+        var obj={flightNum:newO.flightNum,chara:$scope.chars[0],name:newO.name1,timezone:newO.timezone1,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
         $scope.plans.push(obj);
-       
+        $scope.plans[$scope.plans.length-1].flightNum=$scope.plans[$scope.plans.length-2].flightNum
     }   
     //确认输入的机场符合格式
     $scope.checkapt=function(apt,num){
@@ -281,7 +300,7 @@ app.controller("myCtrl",["$scope",function($scope){
             var part = $scope.plans[i];
             var obj={name:part.name,timezone:part.timezone,trans:part.trans1};
             $scope.apts.push(obj);
-            $scope.flightList.append(plantoNode(part.name,part.pek,part.route,part.trans,part.timezone,part.flightNum));
+            $scope.flightList.append(plantoNode(part.name,part.pek,part.route,part.trans,part.timezone,part.flightNum,part.chara));
             obj={name:part.name1,timezone:part.timezone1,trans:part.trans1};
             $scope.apts.push(obj);
             $scope.flightList.append(plantoNode(part.name1,null,null,part.trans1,part.timezone1));            
@@ -946,7 +965,7 @@ app.controller("myCtrl",["$scope",function($scope){
 
         }
         if ($scope.nodes.length%2==0) {
-            for (let i = 0; i < $scope.nodes.length; i=i+2) {
+            for (let i = 0,j=0; i < $scope.nodes.length; i=i+2,j=j+1) {
                 var node1 = $scope.nodes[i];
                 var node2=$scope.nodes[i+1];
                 /* if (node1.date) {
@@ -954,24 +973,26 @@ app.controller("myCtrl",["$scope",function($scope){
                     node1.date=dateformat(node1.date);  
                     }  
                 } */
+                var node3=$scope.plans[j].chara;
                 
-                
-                $scope.rownodes.push([node1,node2])
+                $scope.rownodes.push([node1,node2,node3])
             }
         }else{
-            for (let i = 0; i < $scope.nodes.length-1; i=i+2) {
+            for (let i = 0,j=0; i < $scope.nodes.length-1; i=i+2,j=j+1) {
                 var node1 = $scope.nodes[i];
                 var node2=$scope.nodes[i+1];
-                $scope.rownodes.push([node1,node2])
+                var node3=$scope.plans[j].chara;
+                $scope.rownodes.push([node1,node2,node3])
             }
             var nothing={name:null,trans:null};
-            $scope.rownodes.push([$scope.nodes[$scope.nodes.length-1],nothing]);
+            var temp=$scope.plans[$scope.plans.length-1].chara;
+            $scope.rownodes.push([$scope.nodes[$scope.nodes.length-1],nothing,temp]);
         }
 
     }
     //导出数据
-    $scope.getdata=function(){
-
+    $scope.getdata=function(n){
+       
         if (!$scope.rownodes[0][0].date) {
             alert("请输入始发航班日期");
             return;
@@ -980,27 +1001,31 @@ app.controller("myCtrl",["$scope",function($scope){
             var flights1=[];
             var flights2=[];
             var part1=[]
-            for (let i = 0; i < $scope.rownodes.length; i++) {
+            var td=$scope.tables[n];
+            
+            for (let i = 0,j=0; i < $scope.rownodes.length; i++,j=j+2) {
                 var strings,strings1;
                 var flight=$scope.rownodes[i];
+                var time1,time2;
                 if (!$scope.rownodes[i][0].flightNum) {
                     alert("请输入所有航段的航班号");
                     return;
                 }
                 part.push($scope.rownodes[i][0].name);
                 part.push($scope.rownodes[i][1].name);
-
-                strings=dealFlight(flight);
+                time1=td[j];
+                time2=td[j+1];
+                strings=dealFlight(flight,time1,time2);
                 flights1.push(strings);
-                strings=dealLocFlight(flight);
+                strings=dealLocFlight(flight,time1,time2);
                 flights2.push(strings);
                 var hm=flight[0].route.split(':');
                 strings1=flight[0].name+"-"+flight[1].name+"航段时间"+hm[0]+"小时"+hm[1]+"分钟";
                 part1.push(strings1);
             }
-            var str="【"+part.join("-")+"】\n【北京时间】\n";
+            var str="【"+part.join("-")+"】\n北京时间：\n";
             var str1=flights1.join('\n');
-            var str2="\n【当地时间】\n";
+            var str2="\n当地时间：\n";
             var str3=flights2.join('\n');
             var str4=part1.join('\n');
             var count;
@@ -1069,7 +1094,7 @@ function unique(arr){
         return temp;
 }
 //将航班计划转换为节点
-function plantoNode(name,pek,route,trans,timezone,flightNum){
+function plantoNode(name,pek,route,trans,timezone,flightNum,chara){
     var name=name;
     var pek=pek || null;
     var route=route || null;
@@ -1079,7 +1104,8 @@ function plantoNode(name,pek,route,trans,timezone,flightNum){
     var loc=null;
     var flightNumber=flightNum || null;
     var date=null;
-    var res=new Node(name,pek,utc,loc,trans,timezone,flightNumber,route,date);
+    var char=chara || null;
+    var res=new Node(name,pek,utc,loc,trans,timezone,flightNumber,route,date,char);
     return res;
 
 }
@@ -1237,22 +1263,23 @@ function initRdate(date,pek,route){
     ttime>=24?res.setDate(date.getDate()+1):res.setDate(date.getDate());
     return res;
 }
-function dealFlight(flight){
+function dealFlight(flight,t1,t2){
     var date=(flight[0].date.getMonth()+1)+"月"+flight[0].date.getDate()+"日";
     var flightNum=flight[0].flightNum;
     var apt1=flight[0].name;
-    var time1=flight[0].pek.split(':').join('');
-    var time2=flight[1].pek.split(':').join('');
+    var time1=t1.pek.split(':').join('');
+    var time2=t2.pek.split(':').join('');
     if (flight[0].date.getMonth()<flight[1].date.getMonth()) {
         time2=time2+"+1";
     }else if (flight[0].date.getDate()<flight[1].date.getDate()) {
         time2=time2+"+1";
     }
     var apt2=flight[1].name;
-    var res=date+flightNum+apt1+time1+" "+time2+apt2;
+    var char=flight[2].slice(0,1)
+    var res=date+flightNum+"【"+char+"】"+apt1+time1+" "+time2+apt2;
     return res;
 }
-function dealLocFlight(flight){
+function dealLocFlight(flight,t1,t2){
     var tempdate1=new Date(flight[0].date);
     var date1,date2;
     var temptime1=parseInt(flight[0].pek.split(":")[0])-8+flight[0].timezone;
@@ -1288,12 +1315,15 @@ function dealLocFlight(flight){
         }
     }
     var apt2=flight[1].name;
-    var res=date1+flightNum+apt1+time1+" "+time2+apt2;
+    var char=flight[2].slice(0,1)
+    var testime1=t1.loc.split(":").join("");
+    var testime2=t2.loc.split(":").join("");
+    var res=date1+flightNum+"【"+char+"】"+apt1+testime1+" "+testime2+apt2;
     return res;
 }
 //
 class Node{
-    constructor(name,pek,utc,loc,trans,timezone,flightNum,route,date){
+    constructor(name,pek,utc,loc,trans,timezone,flightNum,route,date,char){
         this.next=null;
         this.name=name;
         this.pek=pek || null;
@@ -1304,6 +1334,7 @@ class Node{
         this.flightNum=flightNum || null;
         this.route=route || null;
         this.date=date || null;
+        this.char=char || null;
     }
 }
 class List{

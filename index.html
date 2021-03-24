@@ -16,19 +16,25 @@
         <div class="primarytable">
             <table class="table table-condensed text-center cont" ng-init="initPlans()">
                 <tr >
-                    <th class="text-center">航班号</th>
-                    <th class="text-center">起飞机场</th>
-                    <th class="text-center">时区</th>
-                    <th class="text-center">航班时刻</th>
-                    <th class="text-center">航段时间</th>
-                    <th class="text-center">目的机场</th>
-                    <th class="text-center">时区</th>
-                    <th class="text-center">过站时间(分)</th>
+                    <th class="text-center col-md-1">航班号</th>
+                    <th class="text-center col-md-1">航班性质</th>
+                    <th class="text-center col-md-1" >起飞机场</th>
+                    <th class="text-center col-md-1">时区</th>
+                    <th class="text-center col-md-1">航班时刻</th>
+                    <th class="text-center col-md-1">航段时间</th>
+                    <th class="text-center col-md-1">目的机场</th>
+                    <th class="text-center col-md-1">时区</th>
+                    <th class="text-center col-md-1">过站时间(分)</th>
                     
                 </tr>
                 <tr ng-repeat="td in plans">
                     <td>
-                        <input type="text" class="form-control text-center" ng-model="td.flightNum" placeholder="MFXXXX">
+                        <input type="text" class="form-control text-center" ng-model="td.flightNum" placeholder="MFXXXX" ng-focus="isstart($index)" ng-blur="updateflightnum($index)">
+                    </td>
+                    <td>
+                        <select class="text-center .col-md-2" ng-model="td.chara" >
+                            <option ng-repeat="x in chars">{{x}}</option>
+                        </select>
                     </td>
                     <td ng-if="$index==0">
                         <input class="form-control text-center" type="text" ng-model="td.name" >
@@ -37,7 +43,7 @@
                         <input class="form-control text-center" type="text" ng-model="plans[$index-1].name1" >
                     </td>
                     <td ng-if="$index==0">
-                        <input class="form-control text-center" type="number" ng-model="td.timezone" >
+                        <input class="form-control text-center" type="number" ng-model="td.timezone" ng-init="td.timezone=8">
                     </td>
                     <td ng-if="$index!=0">
                         <input class="form-control text-center" type="number" ng-model="plans[$index-1].timezone1" >
@@ -57,7 +63,7 @@
                         <input class="form-control text-center" type="text" ng-model="td.name1" >
                     </td>
                     <td>
-                        <input class="form-control text-center" type="number" ng-model="td.timezone1"  >
+                        <input class="form-control text-center" type="number" ng-model="td.timezone1"  ng-init="td.timezone1=8">
                     </td>
                     <td>
                         <input type="number" ng-model="td.trans1" class="form-control text-center" >
@@ -103,7 +109,7 @@
                 <button class="btn btn-primary" ng-click="augment()">添加</button>
                 <button class="btn btn-danger" ng-click="clear()">重置</button>
                 <button class="btn btn-info" ng-click="subsim()">生成</button>
-                <button class="btn btn-default" ng-click="getdata()" ng-hide="rownodes.length==0">导出</button>
+                <button class="btn btn-default" ng-click="getdata(0)" ng-hide="rownodes.length==0">导出</button>
                 
             </div>
         </div>
@@ -225,8 +231,10 @@
                             {{node.name}}
                         </th>
                     </tr>
-                    <tr ng-repeat="tb in tables">
+                    <tr ng-repeat="tb in tables" ng-init="outindex=$index">
+                        
                         <td ng-repeat="t in tb">
+                            <button class="btn btn-default getout" ng-if="$index==0" ng-click="getdata(outindex)">导出</button>
                             {{t.pek}}({{t.loc}})
                         </td>
                     </tr>
