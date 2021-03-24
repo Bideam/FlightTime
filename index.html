@@ -50,14 +50,14 @@
                     </td>
                     <td>
                         <div ng-if="$index==0"> 
-                           <input type="text" ng-model="td.pek" class="form-control text-center" placeholder="北京时 HH:MM"> 
+                           <input type="text" ng-model="td.pek" class="form-control text-center" placeholder="北京时 HH:MM" ng-blur="td.pek=checkpr(td.pek)"> 
                         </div>
                         <div ng-if="$index!=0">
-                            <input type="text" ng-model="td.pek" ng-disabled="true" class="form-control text-center"> 
+                            <input type="text" ng-model="td.pek" ng-disabled="true" class="form-control text-center" > 
                         </div>
                     </td>
                     <td>
-                        <input type="text" ng-model="td.route" class="form-control text-center" placeholder="HH:MM">
+                        <input type="text" ng-model="td.route" class="form-control text-center" placeholder="HH:MM" ng-blur="td.route=checkpr(td.route)">
                     </td>
                     <td >
                         <input class="form-control text-center" type="text" ng-model="td.name1" >

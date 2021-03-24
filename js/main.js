@@ -253,6 +253,22 @@ app.controller("myCtrl",["$scope",function($scope){
             }
         }
     }
+    $scope.checkpr=function(n){
+        if (n.indexOf("：")) {
+            n.replace("：",":");
+        }
+        if (n.indexOf(":")>0 && n.length!=5) {
+            alert("请输入正确时间格式，格式如下: XX:XX or XXXX");
+            
+            return null;
+        }else if(n.indexOf(":")<0 && n.length!=4){
+            alert("请输入正确时间格式，格式如下: XX:XX or XXXX");
+            
+            return null;
+        }
+        n=n.indexOf(":")>0?n:n.substr(0,2)+":"+n.substr(2,2);
+        return n;
+    }
     //清空已添加的航班节点
     $scope.clear=function(){
 
