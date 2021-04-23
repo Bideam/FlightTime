@@ -79,6 +79,10 @@ app.controller("myCtrl",["$scope",function($scope){
         $scope.plans.splice(index+1,0,obj);
 
     }
+    //删除航班节点
+    $scope.minusAug=function(index){
+        $scope.plans.splice(index,1);
+    }
     //用于新增航班节点
     $scope.augment=function(){
 /*         if ($scope.plans.length==0) {
