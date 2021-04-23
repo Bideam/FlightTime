@@ -67,6 +67,10 @@
                     </td>
                     <td>
                         <input type="number" ng-model="td.trans1" class="form-control text-center" >
+                        
+                    </td>
+                    <td style="width: 1%;color: springgreen;">
+                        <span class="glyphicon glyphicon-plus " ng-click="insertAug($index)"></span>
                     </td>
                     
                 </tr>
@@ -234,7 +238,7 @@
                     <tr ng-repeat="tb in tables" ng-init="outindex=$index">
                         
                         <td ng-repeat="t in tb">
-                            <button class="btn btn-default getout" ng-if="$index==0" ng-click="getdata(outindex)">导出</button>
+                            <button class="btn btn-default getout" ng-if="$index==0" ng-click="getdata(outindex)">生成</button>
                             {{t.pek}}({{t.loc}})
                         </td>
                     </tr>

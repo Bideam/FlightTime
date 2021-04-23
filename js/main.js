@@ -72,6 +72,13 @@ app.controller("myCtrl",["$scope",function($scope){
             
         }
     }
+    //插入航班节点
+    $scope.insertAug=function(index){
+        var newO=$scope.plans[index];
+        var obj={flightNum:newO.flightNum,chara:$scope.chars[0],name:newO.name1,timezone:newO.timezone1,trans:null,pek:null,route:null,name1:null,timezone1:null,trans1:null};
+        $scope.plans.splice(index+1,0,obj);
+
+    }
     //用于新增航班节点
     $scope.augment=function(){
 /*         if ($scope.plans.length==0) {
@@ -179,7 +186,8 @@ app.controller("myCtrl",["$scope",function($scope){
             }
         }
            
-        if (apt.timezone=="" || apt.timezone==null || apt.timezone1=="" || apt.timezone1==null) {
+        if (apt.timezone==="" || apt.timezone===null || apt.timezone1==="" || apt.timezone1===null) {
+            
             alert("请输入机场所在时区，正数为东时区，负数为西时区");
             return true;
         }else{
@@ -654,7 +662,7 @@ app.controller("myCtrl",["$scope",function($scope){
     }
     //限制时区
     $scope.limitZone=function(value){
-        if (value=="" || value==null) {
+        if (value==="" || value===null) {
             alert("请输入机场所在时区，正数为东时区，负数为西时区");
             return;
         }
@@ -1008,7 +1016,7 @@ app.controller("myCtrl",["$scope",function($scope){
     }
     //导出数据
     $scope.getdata=function(n){
-       
+        $scope.plans[0].pek=$scope.tables[n][0].pek;
         if (!$scope.rownodes[0][0].date) {
             alert("请输入始发航班日期");
             return;
@@ -1036,7 +1044,7 @@ app.controller("myCtrl",["$scope",function($scope){
                 strings=dealLocFlight(flight,time1,time2);
                 flights2.push(strings);
                 var hm=flight[0].route.split(':');
-                strings1=flight[0].name+"-"+flight[1].name+"航段时间"+hm[0]+"小时"+hm[1]+"分钟";
+                strings1=flight[0].name+dealTimezone(flight[0].timezone)+"-"+flight[0].route+"-"+flight[1].name+dealTimezone(flight[1].timezone)+">>>过站"+dealTrans(flight);//"航段时间"+hm[0]+"小时"+hm[1]+"分钟";
                 part1.push(strings1);
             }
             var str="【"+part.join("-")+"】\n北京时间：\n";
@@ -1052,7 +1060,7 @@ app.controller("myCtrl",["$scope",function($scope){
             }
             var temp=Math.floor(parseInt($scope.rownodes[count][1].trans)/60)+"小时"+(parseInt($scope.rownodes[count][1].trans)%60)+"分钟编排";
             var str5="\n"+$scope.rownodes[count][1].name+"过站时间按"+temp;
-            $scope.outdata=str+str1+str2+str3+'\n\n'+str4+str5;
+            $scope.outdata=str4+'\n\n'+str+str1+str2+str3;
             $scope.pad=false;
         }
         
@@ -1335,6 +1343,42 @@ function dealLocFlight(flight,t1,t2){
     var testime1=t1.loc.split(":").join("");
     var testime2=t2.loc.split(":").join("");
     var res=date1+flightNum+"【"+char+"】"+apt1+testime1+" "+testime2+apt2;
+    return res;
+}
+function dealTrans(flight){
+    var HH=Math.floor(flight[1].trans/60);
+    var MM=flight[1].trans%60;
+    var res;
+    if (HH===0) {
+        res=MM+"分钟";
+    }else{
+        if (MM===0) {
+            res=HH+"小时";
+        }else{
+           res=HH+"小时"+MM+"分钟" 
+        }
+        
+    }
+    return res;
+
+}
+function dealTimezone(timezone){
+    var res;
+    if (timezone !=8) {
+        if (timezone<0) {
+            res="(UTC"+timezone+")";
+        }else{
+            if (timezone>0) {
+                res="(UTC+"+timezone+")";
+            }else{
+                res="(UTC+0)";
+            }
+            
+        }
+        
+    }else{
+        res="";
+    }
     return res;
 }
 //
